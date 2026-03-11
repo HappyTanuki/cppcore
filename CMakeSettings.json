@@ -1,0 +1,239 @@
+{
+  "configurations": [
+    {
+      "name": "x64Debug",
+      "generator": "Visual Studio 18 2026 Win64",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\Output\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_ARCHIVE_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "x64Release",
+      "generator": "Visual Studio 18 2026 Win64",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\Output\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_ARCHIVE_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "Win32Debug",
+      "generator": "Visual Studio 18 2026",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\Output\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "CMAKE_ARCHIVE_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "Win32Release",
+      "generator": "Visual Studio 18 2026",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\Output\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "CMAKE_ARCHIVE_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "x64DebugMT",
+      "generator": "Visual Studio 18 2026 Win64",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\Output\\${name}",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_ARCHIVE_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_MSVC_RUNTIME_LIBRARY",
+          "value": "MultiThreadedDebug",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "x64ReleaseMT",
+      "generator": "Visual Studio 18 2026 Win64",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\Output\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_ARCHIVE_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_MSVC_RUNTIME_LIBRARY",
+          "value": "MultiThreaded",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "Win32DebugMT",
+      "generator": "Visual Studio 18 2026",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\Output\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "CMAKE_ARCHIVE_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_MSVC_RUNTIME_LIBRARY",
+          "value": "MultiThreadedDebug",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "Win32ReleaseMT",
+      "generator": "Visual Studio 18 2026",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\Output\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "CMAKE_ARCHIVE_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
+          "value": "${projectDir}\\Build\\${name}",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_MSVC_RUNTIME_LIBRARY",
+          "value": "MultiThreaded",
+          "type": "STRING"
+        }
+      ]
+    }
+  ]
+}
