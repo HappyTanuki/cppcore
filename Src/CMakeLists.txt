@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 set(TARGET_NAME cppcore)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14 -O3 -fPIC")
+
+if(NOT WIN32)
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14 -O3 -fPIC")
+else()
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ob0")
+endif()
 
 if(APPLE)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../Build/MacOSXRelease)
@@ -62,7 +67,11 @@ endforeach(SOURCE)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../Inc)
 add_library(${TARGET_NAME}A OBJECT ${SOURCES})
 add_library(${TARGET_NAME}W OBJECT ${SOURCES})
-target_compile_options(${TARGET_NAME}A PUBLIC -fPIC -Wno-narrowing)
-target_compile_options(${TARGET_NAME}W PUBLIC -fPIC -Wno-narrowing)
+
+if(NOT WIN32)
+	target_compile_options(${TARGET_NAME}A PUBLIC -fPIC -Wno-narrowing)
+	target_compile_options(${TARGET_NAME}W PUBLIC -fPIC -Wno-narrowing)
+endif()
+
 target_compile_definitions(${TARGET_NAME}W PUBLIC -DUNICODE PUBLIC -D_UNICODE)
 add_library(${TARGET_NAME} STATIC $<TARGET_OBJECTS:cppcoreA> $<TARGET_OBJECTS:cppcoreW>)
