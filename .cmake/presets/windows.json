@@ -1,0 +1,240 @@
+{
+  "version": 9,
+  "include": [
+    "common.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "Windows-Build",
+      "hidden": true,
+      "inherits": [
+        "Paths"
+      ],
+      "generator": "Ninja Multi-Config",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "x64Windows",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "x86Windows",
+      "hidden": true,
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "MSVC-DLL",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+      }
+    },
+    {
+      "name": "MSVC-Static",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+      }
+    },
+    {
+      "name": "Windows-x64-DLL",
+      "displayName": "Windows x64 (DLL runtime)",
+      "inherits": [
+        "Windows-Build",
+        "x64Windows",
+        "MSVC-DLL"
+      ]
+    },
+    {
+      "name": "Windows-x86-DLL",
+      "displayName": "Windows x86 (DLL runtime)",
+      "inherits": [
+        "Windows-Build",
+        "x86Windows",
+        "MSVC-DLL"
+      ]
+    },
+    {
+      "name": "Windows-x64-Static",
+      "displayName": "Windows x64 (Static runtime)",
+      "inherits": [
+        "Windows-Build",
+        "x64Windows",
+        "MSVC-Static"
+      ]
+    },
+    {
+      "name": "Windows-x86-Static",
+      "displayName": "Windows x86 (Static runtime)",
+      "inherits": [
+        "Windows-Build",
+        "x86Windows",
+        "MSVC-Static"
+      ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Windows-Only",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Windows-x64-Debug",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x64-DLL",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Windows-x64-Release",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x64-DLL",
+      "configuration": "Release"
+    },
+    {
+      "name": "Windows-x86-Debug",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x86-DLL",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Windows-x86-Release",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x86-DLL",
+      "configuration": "Release"
+    },
+    {
+      "name": "Windows-x64-Debug-MT",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x64-Static",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Windows-x64-Release-MT",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x64-Static",
+      "configuration": "Release"
+    },
+    {
+      "name": "Windows-x86-Debug-MT",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x86-Static",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Windows-x86-Release-MT",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x86-Static",
+      "configuration": "Release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "Windows-Only",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Windows-x64-Debug",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x64-DLL",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Windows-x64-Release",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x64-DLL",
+      "configuration": "Release"
+    },
+    {
+      "name": "Windows-x86-Debug",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x86-DLL",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Windows-x86-Release",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x86-DLL",
+      "configuration": "Release"
+    },
+    {
+      "name": "Windows-x64-Debug-MT",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x64-Static",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Windows-x64-Release-MT",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x64-Static",
+      "configuration": "Release"
+    },
+    {
+      "name": "Windows-x86-Debug-MT",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x86-Static",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Windows-x86-Release-MT",
+      "inherits": [
+        "Windows-Only"
+      ],
+      "configurePreset": "Windows-x86-Static",
+      "configuration": "Release"
+    }
+  ]
+}

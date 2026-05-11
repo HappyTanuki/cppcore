@@ -1,0 +1,7 @@
+{
+  "version": 9,
+  "include": [
+    ".cmake/presets/windows.json",
+    ".cmake/presets/linux.json"
+  ]
+}
