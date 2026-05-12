@@ -155,7 +155,19 @@ Filedata::Filedata(const std::string& sig, const char * match_file)
 
 std::ostream& operator<<(std::ostream& o, const Filedata& f)
 {
-  return o << f.get_signature() << "," << f.get_filename() << ",";
+  o << f.get_signature() << ",";
+#if defined(UNICODE) || defined(_UNICODE)
+  // C++20 deleted std::ostream::operator<<(const wchar_t*). Narrow the wide
+  // filename so this debug helper keeps working when TCHAR is wchar_t.
+  if (const TCHAR* fn = f.get_filename())
+  {
+    std::wstring ws(fn);
+    o << std::string(ws.begin(), ws.end());
+  }
+#else
+  o << f.get_filename();
+#endif
+  return o << ",";
 }
 
 

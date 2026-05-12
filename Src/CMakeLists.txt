@@ -47,18 +47,21 @@ add_library(${TARGET_NAME}A OBJECT ${SOURCES})
 add_library(${TARGET_NAME}W OBJECT ${SOURCES})
 target_include_directories(${TARGET_NAME}A PUBLIC $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
 target_include_directories(${TARGET_NAME}W PUBLIC $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
+target_compile_features(${TARGET_NAME}A PUBLIC cxx_std_23)
+target_compile_features(${TARGET_NAME}W PUBLIC cxx_std_23)
 if(NOT MSVC)
-	target_compile_options(${TARGET_NAME}A PUBLIC -std=gnu++14 -O3 -fPIC -Wno-narrowing)
-	target_compile_options(${TARGET_NAME}W PUBLIC -std=gnu++14 -O3 -fPIC -Wno-narrowing)
+	target_compile_options(${TARGET_NAME}A PUBLIC -O3 -fPIC -Wno-narrowing)
+	target_compile_options(${TARGET_NAME}W PUBLIC -O3 -fPIC -Wno-narrowing)
 endif()
 target_compile_definitions(${TARGET_NAME}W PUBLIC -DUNICODE -D_UNICODE)
 
 add_library(${TARGET_NAME} STATIC $<TARGET_OBJECTS:cppcoreA> $<TARGET_OBJECTS:cppcoreW>)
 # Combining via $<TARGET_OBJECTS:...> only pulls .obj files, not interface
-# properties, so re-declare the public include path on the unified target.
-# UNICODE/_UNICODE is intentionally NOT re-declared here: consumers that want
-# Wide APIs define it themselves (this matches existing test targets).
+# properties, so re-declare the public include path and language standard
+# on the unified target. UNICODE/_UNICODE is intentionally NOT re-declared
+# here: consumers that want Wide APIs define it themselves.
 target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
+target_compile_features(${TARGET_NAME} PUBLIC cxx_std_23)
 
 # Namespaced alias so external projects can link via `cppcore::cppcore`
 # without colliding on the plain `cppcore` name.
