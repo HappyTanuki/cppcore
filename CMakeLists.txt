@@ -1,19 +1,12 @@
-cmake_minimum_required(VERSION 3.14)
-
-# Detect whether this CMakeLists is the top-level project so embedders
-# (e.g. FetchContent_MakeAvailable) get sensible defaults.
-if(NOT DEFINED CPPCORE_IS_TOP_LEVEL)
-	if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-		set(CPPCORE_IS_TOP_LEVEL TRUE)
-	else()
-		set(CPPCORE_IS_TOP_LEVEL FALSE)
-	endif()
-endif()
+cmake_minimum_required(VERSION 3.21)
 
 set(TARGET_NAME cppcore)
 project(${TARGET_NAME})
 
-option(CPPCORE_BUILD_TESTS "Build cppcore tests" ${CPPCORE_IS_TOP_LEVEL})
+# PROJECT_IS_TOP_LEVEL is set automatically by project() in CMake 3.21+.
+# Tests build by default for top-level invocations and are skipped when
+# embedded via FetchContent / add_subdirectory.
+option(CPPCORE_BUILD_TESTS "Build cppcore tests" ${PROJECT_IS_TOP_LEVEL})
 
 # Fallback output paths for when CMake is invoked without a preset
 # (e.g. plain `cmake ../../Src` from a CI script). When a preset is in use,
