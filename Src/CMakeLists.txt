@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
 message(STATUS "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: " ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY: " ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
@@ -41,12 +41,25 @@ endforeach(SOURCE)
 ##############################################################
 ## Build setting
 ##############################################################
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../Inc)
+set(CPPCORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../Inc)
+
 add_library(${TARGET_NAME}A OBJECT ${SOURCES})
 add_library(${TARGET_NAME}W OBJECT ${SOURCES})
+target_include_directories(${TARGET_NAME}A PUBLIC $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
+target_include_directories(${TARGET_NAME}W PUBLIC $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
 if(NOT MSVC)
 	target_compile_options(${TARGET_NAME}A PUBLIC -std=gnu++14 -O3 -fPIC -Wno-narrowing)
 	target_compile_options(${TARGET_NAME}W PUBLIC -std=gnu++14 -O3 -fPIC -Wno-narrowing)
 endif()
-target_compile_definitions(${TARGET_NAME}W PUBLIC -DUNICODE PUBLIC -D_UNICODE)
+target_compile_definitions(${TARGET_NAME}W PUBLIC -DUNICODE -D_UNICODE)
+
 add_library(${TARGET_NAME} STATIC $<TARGET_OBJECTS:cppcoreA> $<TARGET_OBJECTS:cppcoreW>)
+# Combining via $<TARGET_OBJECTS:...> only pulls .obj files, not interface
+# properties, so re-declare the public include path on the unified target.
+# UNICODE/_UNICODE is intentionally NOT re-declared here: consumers that want
+# Wide APIs define it themselves (this matches existing test targets).
+target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
+
+# Namespaced alias so external projects can link via `cppcore::cppcore`
+# without colliding on the plain `cppcore` name.
+add_library(cppcore::cppcore ALIAS ${TARGET_NAME})
