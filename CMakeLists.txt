@@ -24,6 +24,30 @@ if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${_DEFAULT_OUTPUT_DIR})
 endif()
 
+# MSVC optimization flags for non-Debug configs. Scoped to this directory
+# tree so they do not leak into parent projects that consume cppcore via
+# add_subdirectory / FetchContent.
+if(MSVC)
+	# /Oi  : emit intrinsics inline (memcpy, memset, ...) instead of CRT calls.
+	# /Gy  : per-function COMDAT sections so the linker can drop unreferenced
+	#        functions and fold identical ones (prerequisite for /OPT:REF,ICF).
+	add_compile_options(
+		$<$<NOT:$<CONFIG:Debug>>:/Oi>
+		$<$<NOT:$<CONFIG:Debug>>:/Gy>
+	)
+	# /OPT:REF : strip functions and data never referenced by the image.
+	# /OPT:ICF : fold functions with identical machine code into one symbol.
+	add_link_options(
+		$<$<NOT:$<CONFIG:Debug>>:/OPT:REF>
+		$<$<NOT:$<CONFIG:Debug>>:/OPT:ICF>
+	)
+	# Whole-program / link-time code generation (/GL + /LTCG): defer codegen
+	# to link so the optimizer can inline and propagate across TUs.
+	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
+	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL TRUE)
+endif()
+
 add_subdirectory(Src)
 
 if(CPPCORE_BUILD_TESTS)

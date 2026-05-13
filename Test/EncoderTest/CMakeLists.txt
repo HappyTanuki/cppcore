@@ -34,7 +34,7 @@ endfunction(include_to_list)
 ## Source Filtering
 ##############################################################
 # Glob all source files and filt-out later
-file(GLOB_RECURSE SOURCES *.cpp *.c)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS *.cpp *.c)
 
 if(MSVC)
 	exclude_from_list(SOURCES *_Linux_Mac.cpp)

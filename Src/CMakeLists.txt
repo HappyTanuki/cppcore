@@ -1,65 +1,89 @@
 cmake_minimum_required(VERSION 3.21)
 
-message(STATUS "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: " ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY: " ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-message(STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY: " ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-
-##############################################################
-## Utility functions
-##############################################################
-function(exclude_from_list SOURCES_LIST EXPRESSION)
-	file(GLOB_RECURSE EXCLUDE ${EXPRESSION})
-	if(EXCLUDE)
-		list(REMOVE_ITEM ${SOURCES_LIST} ${EXCLUDE})
-	endif()
-	set(${SOURCES_LIST} ${${SOURCES_LIST}} PARENT_SCOPE)
-endfunction(exclude_from_list)
-
-
-##############################################################
-## Source Filtering
-##############################################################
-# Glob all source files and filt-out later
-file(GLOB_RECURSE SOURCES *.cpp *.c)
-
-if(MSVC)
-	exclude_from_list(SOURCES *_Linux.cpp)
-	exclude_from_list(SOURCES *_Linux_Mac.cpp)
-	exclude_from_list(SOURCES *_Mac.cpp)
-elseif(APPLE)
-	exclude_from_list(SOURCES *_Win.cpp)
-	exclude_from_list(SOURCES *_Linux.cpp)
-else()
-	exclude_from_list(SOURCES *_Win.cpp)
-	exclude_from_list(SOURCES *_Mac.cpp)
-endif()
-
-foreach(SOURCE IN LISTS SOURCES)
-	message(STATUS "SOURCE - " ${SOURCE})
-endforeach(SOURCE)
-
-##############################################################
-## Build setting
-##############################################################
 set(CPPCORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../Inc)
 
-add_library(${TARGET_NAME}A OBJECT ${SOURCES})
-add_library(${TARGET_NAME}W OBJECT ${SOURCES})
-target_include_directories(${TARGET_NAME}A PUBLIC $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
-target_include_directories(${TARGET_NAME}W PUBLIC $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
-target_compile_features(${TARGET_NAME}A PUBLIC cxx_std_23)
-target_compile_features(${TARGET_NAME}W PUBLIC cxx_std_23)
-if(NOT MSVC)
-	target_compile_options(${TARGET_NAME}A PUBLIC -O3 -fPIC -Wno-narrowing)
-	target_compile_options(${TARGET_NAME}W PUBLIC -O3 -fPIC -Wno-narrowing)
-endif()
-target_compile_definitions(${TARGET_NAME}W PUBLIC -DUNICODE -D_UNICODE)
+##############################################################
+## Module helper
+##############################################################
+# Mirrors the per-folder vcxproj layout: each module becomes a pair of
+# OBJECT libraries (A: MultiByte, W: Unicode) compiled with the folder's
+# own stdafx.h as a precompiled header. The unified cppcore static lib
+# downstream pulls the object files from every module.
+function(add_cppcore_module MODULE)
+	set(MODULE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${MODULE})
 
-add_library(${TARGET_NAME} STATIC $<TARGET_OBJECTS:cppcoreA> $<TARGET_OBJECTS:cppcoreW>)
-# Combining via $<TARGET_OBJECTS:...> only pulls .obj files, not interface
-# properties, so re-declare the public include path and language standard
-# on the unified target. UNICODE/_UNICODE is intentionally NOT re-declared
-# here: consumers that want Wide APIs define it themselves.
+	file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${MODULE_DIR}/*.cpp ${MODULE_DIR}/*.c)
+
+	# Drop sources that belong to other platforms based on the *_Win /
+	# *_Linux / *_Mac / *_Linux_Mac filename suffix.
+	if(MSVC)
+		list(FILTER SOURCES EXCLUDE REGEX "_Linux\\.cpp$|_Linux_Mac\\.cpp$|_Mac\\.cpp$")
+	elseif(APPLE)
+		list(FILTER SOURCES EXCLUDE REGEX "_Win\\.cpp$|_Linux\\.cpp$")
+	else()
+		list(FILTER SOURCES EXCLUDE REGEX "_Win\\.cpp$|_Mac\\.cpp$")
+	endif()
+
+	set(PCH_HEADER ${MODULE_DIR}/stdafx.h)
+
+	foreach(VARIANT A W)
+		set(TGT ${MODULE}${VARIANT})
+		add_library(${TGT} OBJECT ${SOURCES})
+		target_include_directories(${TGT} PRIVATE $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
+		target_compile_features(${TGT} PRIVATE cxx_std_23)
+		if(NOT MSVC)
+			target_compile_options(${TGT} PRIVATE -fPIC -Wno-narrowing)
+		endif()
+		if(EXISTS ${PCH_HEADER})
+			target_precompile_headers(${TGT} PRIVATE ${PCH_HEADER})
+		endif()
+	endforeach()
+
+	# Wide-character variant compiles with the Win32 Unicode API selected.
+	target_compile_definitions(${MODULE}W PRIVATE UNICODE _UNICODE)
+
+	# CMake auto-injects the PCH into every TU; .c sources cannot consume
+	# a C++ PCH, so opt them out per source.
+	foreach(SRC ${SOURCES})
+		if(SRC MATCHES "\\.c$")
+			set_source_files_properties(${SRC}
+				TARGET_DIRECTORY ${MODULE}A ${MODULE}W
+				PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+		endif()
+	endforeach()
+endfunction()
+
+##############################################################
+## Modules
+##############################################################
+set(CPPCORE_MODULES
+	000_String
+	001_Encoder
+	100_System
+	200_Common
+	300_Formatter
+	400_Server)
+
+foreach(M ${CPPCORE_MODULES})
+	add_cppcore_module(${M})
+endforeach()
+
+##############################################################
+## Unified static library
+##############################################################
+set(_CPPCORE_OBJECTS)
+foreach(M ${CPPCORE_MODULES})
+	list(APPEND _CPPCORE_OBJECTS $<TARGET_OBJECTS:${M}A> $<TARGET_OBJECTS:${M}W>)
+endforeach()
+
+add_library(${TARGET_NAME} STATIC ${_CPPCORE_OBJECTS})
+# $<TARGET_OBJECTS:...> carries .obj files only; usage requirements from the
+# per-module OBJECT libraries are not inherited, so declare the consumer-
+# facing include path and language standard on the unified target.
+# UNICODE / _UNICODE are not declared here on purpose: the W-variant TUs
+# are already compiled with them (PRIVATE on each ${MODULE}W), and the
+# resulting cppcore.lib contains both A and W symbols. Consumers pick A
+# or W by setting (or not setting) UNICODE in their own build.
 target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${CPPCORE_INCLUDE_DIR}>)
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_23)
 
